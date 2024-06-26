@@ -1,9 +1,10 @@
-FROM alpine:3.8
-LABEL maintainer="Stille <stille@ioiox.com>"
+FROM alpine:3.18
+LABEL maintainer="Chris Wan <wpy.christopher@gmail.com>"
 
-ENV VERSION 0.58.1
-ENV TZ=Asia/Shanghai
-WORKDIR /
+ARG VERSION
+ENV VERSION=${VERSION}
+ENV TZ=Asia/Hong_Kong
+WORKDIR /opt
 
 RUN apk add --no-cache tzdata \
     && ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime \
@@ -16,12 +17,8 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then export PLATFORM=amd64 ; \
 	elif [ "$(uname -m)" = "armhf" ]; then export PLATFORM=arm ; fi \
 	&& wget --no-check-certificate https://github.com/fatedier/frp/releases/download/v${VERSION}/frp_${VERSION}_linux_${PLATFORM}.tar.gz \
 	&& tar xzf frp_${VERSION}_linux_${PLATFORM}.tar.gz \
-	&& cd frp_${VERSION}_linux_${PLATFORM} \
-	&& mkdir /frp \
-	&& mv frpc frpc.toml /frp \
-	&& cd .. \
+	&& mkdir frp_${VERSION}_linux \
+	&& cp frp_${VERSION}_linux_${PLATFORM}/frpc frp_${VERSION}_linux \
 	&& rm -rf *.tar.gz frp_${VERSION}_linux_${PLATFORM}
 
-VOLUME /frp
-
-CMD /frp/frpc -c /frp/frpc.toml
+CMD /opt/frp_${VERSION}_linux/frpc -c /opt/frp_${VERSION}_linux/frpc.toml

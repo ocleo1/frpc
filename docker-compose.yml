@@ -1,0 +1,13 @@
+services:
+  frpc:
+    image: frpc:${VERSION}
+    build:
+      context: ./
+      args:
+        - VERSION=${VERSION}
+    container_name: frpc
+    restart: unless-stopped
+    # https://github.com/compose-spec/compose-spec/blob/master/05-services.md#network_mode
+    network_mode: "host"
+    volumes:
+      - ./frpc.toml:/opt/frp_${VERSION}_linux/frpc.toml
